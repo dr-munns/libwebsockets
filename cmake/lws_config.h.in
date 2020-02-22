@@ -119,7 +119,7 @@
 #cmakedefine LWS_WITH_MINIZ
 #cmakedefine LWS_WITH_NETWORK
 #cmakedefine LWS_WITH_NO_LOGS
-/* extra logging for kards /*
+/* extra logging for kards */
 #cmakedefine LWS_WITH_MORE_LOGS
 #cmakedefine LWS_WITHOUT_CLIENT
 #cmakedefine LWS_WITHOUT_EXTENSIONS
