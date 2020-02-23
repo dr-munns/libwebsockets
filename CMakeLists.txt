@@ -257,7 +257,7 @@ set(PACKAGE "libwebsockets")
 set(CPACK_PACKAGE_NAME "${PACKAGE}")
 set(CPACK_PACKAGE_VERSION_MAJOR "3")
 set(CPACK_PACKAGE_VERSION_MINOR "2")
-set(CPACK_PACKAGE_VERSION_PATCH "0")
+set(CPACK_PACKAGE_VERSION_PATCH "2")
 set(CPACK_PACKAGE_RELEASE 1)
 set(CPACK_GENERATOR "RPM")
 set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
@@ -887,18 +887,20 @@ CHECK_C_SOURCE_COMPILES("#include <stdint.h>
 		return 0;
 	}" LWS_HAS_INTPTR_T)
 
-set(CMAKE_REQUIRED_FLAGS "-pthread")	
-CHECK_C_SOURCE_COMPILES("#define _GNU_SOURCE 
-	#include <pthread.h> 
-	int main(void) { 
-		pthread_t th = 0;
-		pthread_setname_np(th, NULL);
-		return 0;
-	}" LWS_HAS_PTHREAD_SETNAME_NP)
+if (LWS_HAVE_PTHREAD_H)
+	set(CMAKE_REQUIRED_FLAGS "-pthread")
+	CHECK_C_SOURCE_COMPILES("#define _GNU_SOURCE
+		#include <pthread.h>
+		int main(void) {
+			pthread_t th = 0;
+			pthread_setname_np(th, NULL);
+			return 0;
+		}" LWS_HAS_PTHREAD_SETNAME_NP)
+endif()
 
 CHECK_C_SOURCE_COMPILES("#include <stddef.h>
-	#include <getopt.h> 
-	int main(void) { 
+	#include <getopt.h>
+	int main(void) {
 		void *p = (void *)getopt_long;
 		return p != NULL;
 	}" LWS_HAS_GETOPT_LONG)
@@ -1847,6 +1849,11 @@ endif()
 if (LWS_HAVE_LIBCAP)
 	list(APPEND LIB_LIST cap )
 endif()
+
+if (UNIX)
+	list(APPEND LIB_LIST dl)
+endif()
+
 
 # Setup the linking for all libs.
 foreach (lib ${LWS_LIBRARIES})
